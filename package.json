@@ -1,6 +1,6 @@
 {
   "name": "copsapi-wrapper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Typed, quota-aware client for the Critical Ops Public API v2: profiles, leaderboards, match history, weapon stats, server status and autohosted custom games with a live room watcher.",
   "license": "MIT",
   "author": "Matchmaking Live",

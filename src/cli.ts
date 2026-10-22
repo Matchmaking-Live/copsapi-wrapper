@@ -2,7 +2,7 @@ import { parseArgs } from 'node:util';
 import { CopsClient, VERSION } from './client.js';
 import { GAME_MODES, LEADERBOARD_TYPES, MAPS, mapName } from './catalog.js';
 import { isCopsError } from './errors.js';
-import type { AutohostCommand, LeaderboardType } from './types.js';
+import type { AutohostCommand, LeaderboardType } from './enums.js';
 import { careerTotals, describeBan, inputDevices, summarizeResult } from './util.js';
 
 const HELP = `copsapi ${VERSION}: Critical Ops Public API v2 from the command line

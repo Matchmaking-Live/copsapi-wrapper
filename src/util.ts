@@ -1,6 +1,7 @@
 import { randomInt } from 'node:crypto';
 import { ACCOUNT_AGES, BAN_REASONS, INPUT_DEVICES, mapName, type InputDevice } from './catalog.js';
-import type { AutohostResult, Ban, MatchInfo, MatchPlayer, PlayerMatchStats, Profile, UserType } from './types.js';
+import type { UserType } from './enums.js';
+import type { AutohostResult, Ban, MatchInfo, MatchPlayer, PlayerMatchStats, Profile } from './types.js';
 
 export function inputDevices(flags: number): InputDevice[] {
   return (Object.entries(INPUT_DEVICES) as [InputDevice, number][]).filter(([, bit]) => (flags & bit) !== 0).map(([name]) => name);

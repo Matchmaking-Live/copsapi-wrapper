@@ -1,7 +1,8 @@
 import { EventEmitter } from 'node:events';
 import type { CopsClient } from './client.js';
 import { isCopsError } from './errors.js';
-import type { AutohostGame, AutohostResult, MatchState, PlayerMatchStats } from './types.js';
+import type { MatchState } from './enums.js';
+import type { AutohostGame, AutohostResult, PlayerMatchStats } from './types.js';
 
 export interface WatcherOptions {
   intervalMs?: number;

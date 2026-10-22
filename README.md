@@ -32,6 +32,7 @@ It covers every endpoint in the API: player profiles, leaderboards, match histor
 - [Errors](#errors)
 - [Caching](#caching)
 - [Game catalog](#game-catalog)
+- [Named constants](#named-constants)
 - [Helpers](#helpers)
 - [Command line](#command-line)
 - [Field reference](#field-reference)
@@ -451,6 +452,51 @@ modesFor('Purify');
 The package also exports these label tables:
 - `BAN_REASONS`, `USER_TYPES`, `ACCOUNT_AGES`, `PARTY_INVITE_PERMISSIONS` and `CLAN_RANKS`, which map API codes to readable text.
 - `LEADERBOARD_TYPES`, `MATCH_STATES`, `GAME_TYPES` and `INPUT_DEVICES`.
+
+## Named constants
+
+Every code the API uses has a named constant, so you don't have to remember what `2` or `15847` means:
+
+```ts
+import { BanReason, UserType, MapId, GameModeId, LeaderboardType, AutohostCommand, InputDeviceFlag, hasInputDevice } from 'copsapi-wrapper';
+
+if (profile.ban?.reason === BanReason.Hacking) flagForReview(profile);
+if (player.user_type === UserType.Moderator) console.log('a moderator is in the room');
+
+await cops.autohost.create({ serverId, map: MapId.Castello, mode: GameModeId.TournamentMode, roomName: 'Final' });
+await cops.autohost.control(gameId, AutohostCommand.Kick, userId);
+const page = await cops.leaderboards.page(LeaderboardType.Kills);
+
+hasInputDevice(player.input_device_flags, InputDeviceFlag.Touch);
+```
+
+| Constant | Values |
+| --- | --- |
+| `UserType` | `Spectator`, `User`, `AssistantMod`, `Moderator`, `VeteranMod`, `Developer` |
+| `BanType` | `Permanent`, `Temporary` |
+| `BanReason` | `Unknown`, `FraudAttempt`, `Hacking`, `Griefing`, `VerbalAbuse`, `Idle`, `Spam`, `ReportAbuse`, `AccountTrading`, `Glitching`, `Ghosting`, `PartyingWithHacker`, `UnderInvestigation`, `MarketplaceAbuse` |
+| `ClanMemberRank` | `Member`, `Officer`, `CoLeader`, `Leader` |
+| `PartyInvitePermission` | `Anybody`, `OnlyFriendsAndClanMembers`, `Nobody` |
+| `AccountAge` | `UnderAWeek` (`'1w'`) to `FourYearsOrMore` (`'5y+'`) |
+| `GameType` | `Ranked`, `Casual` |
+| `MatchResult` | `Win`, `Loss`, `Draw` |
+| `InputDeviceFlag` | `KeyboardMouse`, `Touch`, `Gamepad` (bit flags: use `hasInputDevice`) |
+| `MapId` | Every map, such as `Canals` or `Castello` |
+| `GameModeId` | Every hostable mode, such as `Defuse`, `TeamDeathmatch` or `TournamentMode` |
+| `WinCondition` | `TeamEliminated`, `TeamKills`, `TimeUp`, `Surrendered` |
+| `LeaveReason` | `Left`, `Timeout`, `Kicked`, `Banned`, `PingLimit`, `AFK` |
+| `MatchState` | `WaitingForPlayers`, `Starting`, `Freezetime`, `OnGoing`, `BombPlanted`, `Win`, `TeamFlip`, `GameEnd`, `ChangingMap` |
+| `AutohostCommand` | `Kick`, `Restart`, `RoomOwnerAdd`, `RoomOwnerRemove`, `Close` |
+| `LeaderboardType` | `Mmr`, `Kills`, `Deaths`, `Assists`, `Matches`, `Wins`, `Losses`, `Xp`, `Mvp` |
+| `GameStatus` | `Open`, `Ended` |
+
+Each constant is a plain `as const` object rather than a TypeScript `enum`. It works the same way in your code, but it also runs under Node's built-in TypeScript support and with the `erasableSyntaxOnly` option. Each one is also a type with the same name:
+
+```ts
+function label(reason: BanReason) { ... }
+```
+
+Some values can grow as Critical Force updates the game: maps, game modes, win conditions, leave reasons and match states. For those, response fields stay typed as `number` or as an open string, so a new map or reason never breaks your build. The constants list the values known when this version was released; compare against them as usual, and handle unknown values in a `default` branch.
 
 ## Helpers
 

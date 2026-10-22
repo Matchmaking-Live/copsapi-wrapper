@@ -4,12 +4,10 @@ import { CopsApiError, isCopsError } from './errors.js';
 import { QuotaTracker, type Priority, type QuotaSnapshot, type RateLimitOptions } from './ratelimit.js';
 import { sleep } from './sleep.js';
 import { Transport, type Hooks, type QueryValue } from './transport.js';
+import type { AutohostCommand, GameTypeCode, LeaderboardType } from './enums.js';
 import type {
-  AutohostCommand,
   AutohostGame,
-  GameTypeCode,
   LeaderboardEntry,
-  LeaderboardType,
   MatchHistoryEntry,
   MatchInfo,
   Profile,
@@ -19,7 +17,7 @@ import type {
 import { randomPassword, regionOf, type Region } from './util.js';
 import { AutohostWatcher, type WatcherOptions } from './watcher.js';
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.1.0';
 export const DEFAULT_BASE_URL = 'https://latest.prod.copsapi.criticalforce.fi/api/public/v2';
 
 export interface CopsClientOptions {

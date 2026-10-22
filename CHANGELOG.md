@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0
+
+- Named constants for every code the API uses, such as `BanReason.Hacking`, `UserType.Moderator`, `MapId.Castello`, `GameModeId.TournamentMode`, `LeaderboardType.Kills` and `AutohostCommand.Kick`. Each one is also a type, with the same name.
+- `hasInputDevice(flags, InputDeviceFlag.Touch)` checks the input device bitmask.
+- `win_condition` on autohost results is now typed as `WinCondition`, and `status` on hosted games as `GameStatus`.
+- The existing type names (`UserType`, `BanType`, `BanReasonCode`, `GameTypeCode`, `MatchResultCode` and the rest) still work, so nothing breaks.
+
 ## 1.0.0
 
 First release, covering the Critical Ops Public API v2.0.0:

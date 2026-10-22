@@ -1,4 +1,4 @@
-import type { AccountAge, BanReasonCode, ClanMemberRank, PartyInvitePermission, UserType } from './types.js';
+import type { AccountAge, BanReason, ClanMemberRank, MapId, PartyInvitePermission, UserType } from './enums.js';
 
 export const MAPS = {
   613: 'Canals',
@@ -29,7 +29,6 @@ export const MAPS = {
   15391: 'Castello',
 } as const satisfies Record<number, string>;
 
-export type MapId = keyof typeof MAPS;
 export type MapName = (typeof MAPS)[MapId];
 
 export interface GameModeInfo {
@@ -98,7 +97,7 @@ export function isHostable(mode: number | string, map: number | string): boolean
   return !!m && id != null && m.maps.includes(id);
 }
 
-export const BAN_REASONS: Record<BanReasonCode, string> = {
+export const BAN_REASONS: Record<BanReason, string> = {
   0: 'Unknown',
   1: 'Fraud attempt',
   2: 'Hacking',

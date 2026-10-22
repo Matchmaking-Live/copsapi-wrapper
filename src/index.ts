@@ -43,7 +43,7 @@ export {
   modesFor,
   isHostable,
 } from './catalog.js';
-export type { MapId, MapName, GameModeKey, GameModeInfo, GameTypeName, InputDevice } from './catalog.js';
+export type { MapName, GameModeKey, GameModeInfo, GameTypeName, InputDevice } from './catalog.js';
 export {
   inputDevices,
   banReason,
@@ -59,4 +59,5 @@ export {
   regionOf,
 } from './util.js';
 export type { Totals, TotalsScope, TeamSummary, ResultSummary, Region } from './util.js';
+export * from './enums.js';
 export type * from './types.js';

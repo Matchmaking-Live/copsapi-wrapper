@@ -1,13 +1,20 @@
-export type UnixSeconds = number;
+import type {
+  AccountAge,
+  AutohostCommand,
+  BanReason,
+  BanType,
+  ClanMemberRank,
+  GameStatus,
+  GameType,
+  LeaveReason,
+  MatchResult,
+  MatchState,
+  PartyInvitePermission,
+  UserType,
+  WinCondition,
+} from './enums.js';
 
-export type UserType = 0 | 1 | 2 | 4 | 8 | 64;
-export type BanType = 0 | 1;
-export type BanReasonCode = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
-export type AccountAge = '1w' | '1m' | '3m' | '1y' | '2y' | '3y' | '4y' | '5y+';
-export type PartyInvitePermission = 0 | 1 | 2;
-export type ClanMemberRank = 10 | 20 | 30 | 40;
-export type GameTypeCode = 1 | 2;
-export type MatchResultCode = 1 | 2 | 3;
+export type UnixSeconds = number;
 
 export interface PlayerLevel {
   level: number;
@@ -26,7 +33,7 @@ export interface ProfileBasicInfo {
 
 export interface Ban {
   type: BanType;
-  reason: BanReasonCode;
+  reason: BanReason;
   days_left: number;
 }
 
@@ -97,11 +104,11 @@ export interface ServerStatus {
 
 export interface MatchHistoryEntry {
   id: string;
-  game_type: GameTypeCode;
+  game_type: GameType;
   game_mode_id: number;
   map_id: number;
   team: number;
-  result: MatchResultCode;
+  result: MatchResult;
   left_match: boolean;
   scores: number[];
 }
@@ -110,8 +117,6 @@ export interface PartyInfo {
   is_leader: boolean;
   players: number[];
 }
-
-export type LeaveReason = 'Left' | 'Timeout' | 'Kicked' | 'Banned' | 'PingLimit' | 'AFK' | (string & {});
 
 export interface MatchPlayer {
   user_id: number;
@@ -130,13 +135,13 @@ export interface MatchPlayer {
 
 export interface MatchInfo {
   id: string;
-  game_type: GameTypeCode;
+  game_type: GameType;
   game_mode_id: number;
   server_id: number;
   map_id: number;
   team_factions: number[];
   winning_team: number;
-  win_condition: 'TeamEliminated' | 'TeamKills' | 'TimeUp' | 'Surrendered' | (string & {});
+  win_condition: WinCondition;
   scores: number[];
   started_at: UnixSeconds;
   ended_at: UnixSeconds;
@@ -152,8 +157,6 @@ export interface WeaponStats {
   h: number;
 }
 
-export type LeaderboardType = 'mmr' | 'kills' | 'deaths' | 'assists' | 'matches' | 'wins' | 'losses' | 'xp' | 'mvp';
-
 export interface LeaderboardEntry {
   position: number;
   score: number;
@@ -161,18 +164,6 @@ export interface LeaderboardEntry {
   ranked: RankedStats;
   clan?: ClanMembership;
 }
-
-export type MatchState =
-  | 'WaitingForPlayers'
-  | 'Starting'
-  | 'Freezetime'
-  | 'OnGoing'
-  | 'BombPlanted'
-  | 'Win'
-  | 'TeamFlip'
-  | 'GameEnd'
-  | 'ChangingMap'
-  | (string & {});
 
 export interface PlayerMatchStats {
   user_id: number;
@@ -203,7 +194,7 @@ export interface AutohostResult {
   map_id: number;
   team_factions: number[];
   winning_team: number;
-  win_condition: string;
+  win_condition: WinCondition;
   scores: number[];
   started_at: UnixSeconds;
   ended_at: UnixSeconds;
@@ -214,7 +205,7 @@ export interface AutohostResult {
 
 export interface AutohostGame {
   id: number;
-  status: 'open' | 'ended';
+  status: GameStatus;
   created_at: UnixSeconds;
   updated_at: UnixSeconds;
   ended_at: UnixSeconds | null;
@@ -231,8 +222,6 @@ export interface AutohostGame {
   replay_id: string | null;
   rejection_reason: string | null;
 }
-
-export type AutohostCommand = 'kick' | 'restart' | 'room_owner_add' | 'room_owner_remove' | 'close';
 
 export interface ApiErrorBody {
   error: { code: string; message: string; retry_after?: number };

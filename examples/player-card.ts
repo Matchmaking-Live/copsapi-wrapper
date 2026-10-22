@@ -1,4 +1,4 @@
-import { CopsClient, careerTotals, describeBan, accountAgeLabel } from 'copsapi-wrapper';
+import { CopsClient, GameType, careerTotals, describeBan, accountAgeLabel } from 'copsapi-wrapper';
 
 const cops = new CopsClient(process.env.COPS_API_TOKEN);
 const name = process.argv[2] ?? 'SomePlayer';
@@ -10,7 +10,7 @@ if (!player) {
 }
 
 const ranked = careerTotals(player, 'ranked');
-const weapons = await cops.stats.topWeapons(player.basic_info.user_id, { limit: 3 });
+const weapons = await cops.stats.topWeapons(player.basic_info.user_id, { gameType: GameType.Ranked, limit: 3 });
 
 console.log(`${player.basic_info.name}${player.clan ? ` [${player.clan.basic_info.tag}]` : ''}, level ${player.basic_info.player_level.level}`);
 console.log(`Account age: ${accountAgeLabel(player)}. ${describeBan(player.ban) ?? 'Not banned.'}`);

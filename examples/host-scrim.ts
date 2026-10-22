@@ -1,4 +1,4 @@
-import { CopsClient, isCopsError, mapName, summarizeResult } from 'copsapi-wrapper';
+import { CopsClient, GameModeId, MapId, isCopsError, mapName, summarizeResult } from 'copsapi-wrapper';
 
 const cops = new CopsClient(process.env.COPS_API_TOKEN, { rateLimit: { reserve: 15 } });
 
@@ -13,7 +13,7 @@ if (!server) throw new Error('No game server is online.');
 
 let room;
 try {
-  room = await cops.autohost.host({ serverId: server.id, mode: 'tournament', map: 'Castello', roomName: 'Scrim', owners: captains });
+  room = await cops.autohost.host({ serverId: server.id, mode: GameModeId.TournamentMode, map: MapId.Castello, roomName: 'Scrim', owners: captains });
 } catch (err) {
   if (isCopsError(err, 'game_rejected')) console.error('The game server refused the game:', err.message);
   throw err;

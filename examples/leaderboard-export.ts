@@ -1,10 +1,10 @@
 import { writeFile } from 'node:fs/promises';
-import { CopsClient } from 'copsapi-wrapper';
+import { CopsClient, LeaderboardType } from 'copsapi-wrapper';
 
 const cops = new CopsClient(process.env.COPS_API_TOKEN);
 const rows = ['position,user_id,name,clan,mmr,wins,losses'];
 
-for await (const entry of cops.leaderboards.iterate('mmr', { rank: 9, maxPages: 20 })) {
+for await (const entry of cops.leaderboards.iterate(LeaderboardType.Mmr, { rank: 9, maxPages: 20 })) {
   rows.push([entry.position, entry.basic_info.user_id, JSON.stringify(entry.basic_info.name), entry.clan?.basic_info.tag ?? '', entry.score, entry.ranked.wins, entry.ranked.losses].join(','));
 }
 

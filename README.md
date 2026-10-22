@@ -91,7 +91,7 @@ If your token lacks `Autohost`, hosting calls throw `insufficient_permissions` w
 ## Quick start
 
 ```ts
-import { CopsClient, careerTotals, describeBan } from 'copsapi-wrapper';
+import { CopsClient, LeaderboardType, careerTotals, describeBan } from 'copsapi-wrapper';
 
 const cops = new CopsClient('cops_your_token_here');
 
@@ -99,7 +99,7 @@ const player = await cops.profiles.get('SomePlayer');
 const ranked = careerTotals(player, 'ranked');
 console.log(player.basic_info.name, player.stats.ranked.mmr, ranked.kd, describeBan(player.ban) ?? 'not banned');
 
-const top = await cops.leaderboards.top('mmr', 25);
+const top = await cops.leaderboards.top(LeaderboardType.Mmr, 25);
 const servers = await cops.servers.online();
 ```
 
@@ -171,9 +171,11 @@ const server = await cops.servers.pick({ region: 'EU' });
 ## Match history
 
 ```ts
+import { GameType } from 'copsapi-wrapper';
+
 const history = await cops.matches.history(userId);
 const [match] = await cops.matches.get([history[0].id]);
-const recent = await cops.matches.recent(userId, { limit: 5, gameType: 'ranked' });
+const recent = await cops.matches.recent(userId, { limit: 5, gameType: GameType.Ranked });
 ```
 
 - `history` returns the player's recent matches, newest first. The history resets with each game update.
@@ -183,27 +185,32 @@ const recent = await cops.matches.recent(userId, { limit: 5, gameType: 'ranked' 
 ## Weapon stats
 
 ```ts
-const weapons = await cops.stats.weapons(userId, 'ranked');
-const best = await cops.stats.topWeapons(userId, { by: 'k', limit: 5 });
+import { GameType } from 'copsapi-wrapper';
+
+const ranked = await cops.stats.weapons(userId, GameType.Ranked);
+const casual = await cops.stats.weapons(userId, GameType.Casual);
+const best = await cops.stats.topWeapons(userId, { gameType: GameType.Ranked, by: 'k', limit: 5 });
 ```
 
-- The game type for `weapons` is `'ranked'` or `'casual'`. Custom games count as casual.
+- The game type is `GameType.Ranked` or `GameType.Casual`; the strings `'ranked'` and `'casual'` work too. Custom games count as casual.
 - `topWeapons` adds a `headshotRate` to each weapon.
 
 ## Leaderboards
 
 ```ts
-const page = await cops.leaderboards.page('mmr', { page: 1 });
-const elite = await cops.leaderboards.page('mmr', { rank: 9 });
+import { LeaderboardType } from 'copsapi-wrapper';
 
-for await (const entry of cops.leaderboards.iterate('kills', { maxPages: 10 })) {
+const page = await cops.leaderboards.page(LeaderboardType.Mmr, { page: 1 });
+const elite = await cops.leaderboards.page(LeaderboardType.Mmr, { rank: 9 });
+
+for await (const entry of cops.leaderboards.iterate(LeaderboardType.Kills, { maxPages: 10 })) {
   console.log(entry.position, entry.basic_info.name, entry.score);
 }
 
-const top50 = await cops.leaderboards.top('wins', 50);
+const top50 = await cops.leaderboards.top(LeaderboardType.Wins, 50);
 ```
 
-- The types are `mmr`, `kills`, `deaths`, `assists`, `matches`, `wins`, `losses`, `xp` and `mvp`. Pages hold 10 entries.
+- The types are `LeaderboardType.Mmr`, `Kills`, `Deaths`, `Assists`, `Matches`, `Wins`, `Losses`, `Xp` and `Mvp`; the plain strings (`'mmr'`, `'kills'` and so on) work too. Pages hold 10 entries.
 - `page` returns `{ entries, size, pages }`. `rank` (0 to 9) filters to one rank.
 - Players move as matches end, so `iterate` skips anyone already yielded on an earlier page.
 
@@ -214,25 +221,27 @@ This needs a token with the `Autohost` permission. To check before showing hosti
 ### One call: host, wait for the code, add owners
 
 ```ts
+import { GameModeId, MapId } from 'copsapi-wrapper';
+
 const server = await cops.servers.pick({ region: 'EU' });
 const room = await cops.autohost.host({
   serverId: server.id,
-  mode: 'tournament',
-  map: 'Castello',
+  mode: GameModeId.TournamentMode,
+  map: MapId.Castello,
   roomName: 'Scrim #42',
   owners: [captainUserId],
 });
 console.log(`Join with code ${room.code}, password ${room.password}`);
 ```
 
-- `mode` and `map` accept names (`'Tournament Mode'`, `'castello'`) or ids. Combinations the API doesn't allow are refused before the request is sent; pass `validate: false` if Critical Force added a map after this release.
+- `mode` and `map` take a `GameModeId` and a `MapId`. Names (`'Tournament Mode'`, `'castello'`) and raw ids work too. Combinations the API doesn't allow are refused before the request is sent; pass `validate: false` if Critical Force added a map after this release.
 - A random 6-character password is generated unless you pass `password`. Pass `password: false` for an open room.
 - `host` throws `game_rejected` if the game server refuses the game (it's full or in maintenance, or the token already hosts 10 games there). It throws `game_gone` or `timeout` if the room never appears.
 
 ### Step by step
 
 ```ts
-const game = await cops.autohost.create({ serverId: 6, mode: 15847, map: 15391, roomName: 'Final', password: 'abc' });
+const game = await cops.autohost.create({ serverId: 6, mode: GameModeId.Defuse, map: MapId.Raid, roomName: 'Final', password: 'abc' });
 const ready = await cops.autohost.waitForRoom(game.id);
 const games = await cops.autohost.poll([game.id, otherId]);
 const one = await cops.autohost.get(game.id);
@@ -245,12 +254,14 @@ const one = await cops.autohost.get(game.id);
 ### Room commands
 
 ```ts
+import { AutohostCommand } from 'copsapi-wrapper';
+
 await cops.autohost.kick(gameId, userId);
 await cops.autohost.addOwner(gameId, userId);
 await cops.autohost.removeOwner(gameId, userId);
 await cops.autohost.restart(gameId);
 await cops.autohost.close(gameId);
-await cops.autohost.control(gameId, 'kick', userId);
+await cops.autohost.control(gameId, AutohostCommand.Kick, userId);
 ```
 
 - `kick` removes the player and keeps them out for an hour.

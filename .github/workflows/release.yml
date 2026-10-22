@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/copsapi-wrapper
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+      - run: npm ci
+      - name: Check the tag matches the package version
+        run: |
+          project=$(node -p "require('./package.json').version")
+          runtime=$(grep -oP "VERSION = '\K[^']+" src/client.ts)
+          if [ "v$project" != "$GITHUB_REF_NAME" ] || [ "$runtime" != "$project" ]; then
+            echo "Tag $GITHUB_REF_NAME, package.json $project and VERSION $runtime in src/client.ts must all match."
+            exit 1
+          fi
+      - run: npm publish
